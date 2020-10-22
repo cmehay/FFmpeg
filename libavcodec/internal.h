@@ -391,6 +391,10 @@ int ff_int_from_list_or_default(void *ctx, const char * val_name, int val,
 
 void ff_dvdsub_parse_palette(uint32_t *palette, const char *p);
 
+int ff_alloc_afd_sei(const AVFrame *frame, size_t prefix_len,
+                     void **data, size_t *sei_size, int afd_value);
+
+
 #if defined(_WIN32) && CONFIG_SHARED && !defined(BUILDING_avcodec)
 #    define av_export_avcodec __declspec(dllimport)
 #else

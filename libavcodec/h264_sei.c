@@ -508,3 +508,30 @@ const char *ff_h264_sei_stereo_mode(const H264SEIFramePacking *h)
         return NULL;
     }
 }
+
+/* Defined in SCTE 128-1 2013 Sec 8.1 */
+int ff_alloc_afd_sei(const AVFrame *frame, size_t prefix_len,
+                     void **data, size_t *sei_size, int afd_value)
+{
+    uint8_t *sei_data;
+
+    *sei_size = 9;
+    *data = av_mallocz(*sei_size + prefix_len);
+    if (!*data)
+        return AVERROR(ENOMEM);
+    sei_data = (uint8_t*)*data + prefix_len;
+
+    /* country code (SCTE 128-1 Sec 8.1.1) */
+    sei_data[0] = 0xb5;
+    sei_data[1] = 0;
+    sei_data[2] = 0x31;
+
+    /* provider code (SCTE 128-1 Sec 8.1.2) */
+    AV_WL32(sei_data + 3, MKTAG('D', 'T', 'G', '1'));
+
+    /* AFD data (SCTE 128-1 Sec 8.2.5) */
+    sei_data[7] = 0x41;
+    sei_data[8] = 0xf0 | afd_value;
+
+    return 0;
+}
